@@ -19,10 +19,49 @@
 //image[signal8][在線検出センサ][scale=1]
 
 
-=== 閉鎖信号機（在線検出タイプ）
+== 閉塞信号機（在線検出タイプ）
+アナログでもDCCでも使用できる閉塞信号機（閉そく信号機：へいそくしんごうき）です。実際の閉塞信号機とは違って車両のATSを働かせて車両を停止させることはできません。
+在線検出センサで車両を検出したら、決まったパターンで信号機のライトの点灯を変化させます。
+
+//image[heisoku1][閉塞信号機][scale=1]
+
+=== スケッチのダウンロード
+
+@<tt>{github}からダウンロードしてください。
+
+@<href>{https://github.com/DccShield/BlockSignalling,[ BlockSignallingスケッチ ]}
+
+https://github.com/DccShield/BlockSignalling
+
+=== スケッチの構成
+以下のソースファイルが @<tt>{BlockSignalling}のスケッチに含まれています。
+
+@<tt>{cds.cpp　:　Cds}センサライブラリ
+
+@<tt>{cds.h  :　Cds}センサライブラリ用ヘッダファイル
+
+@<tt>{3ColorLightSignal.cpp : }３現示信号機ライブラリ
+
+@<tt>{3ColorLightSignal.h : }３現示信号機ライブラリ用ヘッダファイル
+
+@<tt>{FourDeceleration.cpp : }４現示減速・抑速信号機ライブラリ
+
+@<tt>{FourDeceleration.h : }４現示減速・抑速信号機ライブラリ用ヘッダファイル
+
+@<tt>{FourVigillance.cpp : }４現示警戒信号機ライブラリ
+
+@<tt>{FourVigillance.h : }４現示警戒信号機ライブラリ用ヘッダファイル
+
+@<tt>{BlockSignalling.ino :　}閉塞信号機スケッチ
 
 
-=== 閉鎖信号機（アクセサリデコーダタイプ）
+=== BlockSignalling.ino に含まれている関数
 
 
-=== 出発信号機（アクセサリデコーダタイプ） 
+
+
+
+== 閉塞信号機（アクセサリデコーダタイプ）
+
+
+== 出発信号機（アクセサリデコーダタイプ）
