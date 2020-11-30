@@ -779,6 +779,8 @@ void notifyDccSpeedRaw( uint16_t Addr, DCC_ADDR_TYPE AddrType, uint8_t Raw)
 
 ユーザープログラムにて。ファンクションコマンドを受信した時の動きを定義します。
 
+F1-F28のファンクションの受信が可能です。
+
 ==== 構文
 @<tt>{notifyDccFunc( Addr, AddrType, FuncGrp, FuncState)}
 
@@ -788,10 +790,15 @@ void notifyDccSpeedRaw( uint16_t Addr, DCC_ADDR_TYPE AddrType, uint8_t Raw)
 @<tt>{AddrType : DCC_ADDR_SHORT(0) or DCC_ADDR_LONG(1)}
 
 @<tt>{FuncGrp : FN_0      - 14 speed step headlight function Mask FN_BIT_00.}
+
 @<tt>{          FN_0_4    - Functions  0 to  4. Mask FN_BIT_00 - FN_BIT_04}
+
 @<tt>{          FN_5_8    - Functions  5 to  8. Mask FN_BIT_05 - FN_BIT_08}
+
 @<tt>{          FN_9_12   - Functions  9 to 12. Mask FN_BIT_09 - FN_BIT_12}
+
 @<tt>{          FN_13_20  - Functions 13 to 20. Mask FN_BIT_13 - FN_BIT_20}
+
 @<tt>{          FN_21_28  - Functions 21 to 28. Mask FN_BIT_21 - FN_BIT_28}
 
 @<tt>{FuncState : }アクティブな関数がそのビットに 1 を持つビットマスク。
@@ -862,8 +869,11 @@ DCC電子工作連合ではこのコールバック関数は使用していま�
 
 
 ==== 構文
+
 @<tt>{notifyDccAccTurnoutBoard( BoardAddr, OutputPair, Direction, OutputPower )}
+
 ==== パラメーター
+
 @<tt>{BoardAddr : }ボードアドレスごとに指定します．@<tt>{CV 1 LSB }および@<tt>{ CV 9 MSB }に相当します。
 
 @<tt>{OutputPair :} 出力ペア番号．@<tt>{0～3 }の範囲です。
@@ -941,8 +951,11 @@ void notifyDccAccTurnoutBoard( uint16_t BoardAddr, uint8_t OutputPair,
 
 
 ==== 構文
+
 @<tt>{notifyDccAccTurnoutOutput(Addr, Direction, OutputPower )}
+
 ==== パラメーター
+
 @<tt>{Addr : }出力アドレスごとに 4つの出力ペアを持つ標準的なアクセサリーデコーダの場合、1ボードあたり4つのアドレスがあります。
 
 @<tt>{Direction : }ターンアウト方向。0または1の値を持ちます。アクセサリーパケットの@<tt>{DDD3}ビットのビット0に相当します。
@@ -998,6 +1011,7 @@ void notifyDccAccTurnoutOutput( uint16_t Addr, uint8_t Direction,
 
 ==== 構文
 @<tt>{notifyDccAccBoardAddrSet( BoardAddr )}
+
 ==== パラメーター
 @<tt>{BoardAddr :} ボードアドレスごと。@<tt>{CV1 LSBとCV9 MSB}に相当します。
 4つの出力ペアを持つ標準的なアクセサリデコーダのためのボードごとのアドレス。
@@ -1010,6 +1024,7 @@ void notifyDccAccTurnoutOutput( uint16_t Addr, uint8_t Direction,
 //}
 
 === notifyDccAccOutputAddrSet()
+
 ターンアウトアクセサリーデコーダの出力指向コールバック関数です。
 
 この通知は、新しい出力アドレスが、受信した次の@<tt>{DCC}ターンアウトパケットのアドレスに設定されている場合です。
@@ -1018,8 +1033,11 @@ void notifyDccAccTurnoutOutput( uint16_t Addr, uint8_t Direction,
 
 
 ==== 構文
+
 @<tt>{notifyDccAccOutputAddrSet( uint16_t Addr)}
+
 ==== パラメーター
+
 @<tt>{Addr : }出力アドレスごとに4つの出力ペアを持つ標準的なアクセサリーデコーダの場合、1ボードあたり4つのアドレスがあります。
 
 ==== 戻り値
@@ -1030,13 +1048,15 @@ void notifyDccAccTurnoutOutput( uint16_t Addr, uint8_t Direction,
 //}
 
 
-===　notifyDccSigOutputState()
+
+=== notifyDccSigOutputState()
 シグナルアスペクトのアクセサリーデコーダのコールバック関数です。
 
 @<tt>{S-9.2.1} で拡張アクセサリーデコーダコントロールパケットとして定義されています。
 
 ==== 構文
 @<tt>{notifyDccSigOutputState( Addr, State )}
+
 ==== パラメーター
 @<tt>{Addr :} デコーダーアドレス
 
@@ -1055,8 +1075,11 @@ void notifyDccAccTurnoutOutput( uint16_t Addr, uint8_t Direction,
 @<tt>{DCC} パケットのコールバック。@<tt>{DCC} パケットバイトで呼び出されます。
 
 ==== 構文
+
 @<tt>{notifyDccMsg( Msg )}
+
 ==== パラメーター
+
 @<tt>{Msg : DCC_MSG }構造体へのポインタ。値は以下の通りです。
 
 @<tt>{Msg->Size -} パケット内のデータバイト数。
@@ -1236,9 +1259,8 @@ void notifyCVResetFactoryDefault()
 
 
 
+=== notifyCVAck()
 
-
-===　notifyCVAck()
 [ユーザープログラムで使用します]
 
 @<tt>{CV} の書き込みを確認しなければならない場合に呼び出されます．
@@ -1254,6 +1276,7 @@ void notifyCVResetFactoryDefault()
 認識されないことが多いです。
 
 ==== 構文
+
 @<tt>{notifyCVAck(void)}
 
 ==== 使用例
