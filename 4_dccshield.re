@@ -1,12 +1,12 @@
 = DCC用スケッチを作る
 == どんなスケッチを作る？
-本@<tt>{Arduino Nano  DCC Shield}と@<tt>{NmraDCC}ライブラリを使うことで、ファンクションデコーダ、アクセサリデコーダ、
+本@<tt>{Arduino Nano DCC Shield}と@<tt>{NmraDCC}ライブラリを使うことで、ファンクションデコーダ、アクセサリデコーダ、
 @<tt>{DCC}モニタ（@<tt>{DCC}スニファ）を作ります。
 以下の順番でファンクションデコーダ、アクセサリデコーダを紹介していきます。
 
 //blankline
 
-・何もしないファンクションデコーダ
+・ファンクションデコーダーの雛形
 
 　@<tt>{FunctionDecoderDoNothing.ino}
 
@@ -15,6 +15,12 @@
 ・@<tt>{LED}ファンクションデコーダ
 
 　@<tt>{FunctionDecoderLED.ino}
+
+//blankline
+
+・@<tt>{FX}照明効果ファンクションデコーダ
+
+　@<tt>{FunctionDecoderLEDSEQ.ino}
 
 //blankline
 
@@ -62,16 +68,16 @@
 //}
 
 #@#-----------------------------------------------------------------------------
-#@# 何もしないファンクションデコーダを作る
+#@# ファンクションデコーダの雛形を作る
 #@#-----------------------------------------------------------------------------
 
-== 何もしないファンクションデコーダを作る
-まずは@<tt>{DCC}ファンクションデコーダの元となる、何もしないファンクションデコーダ@<tt>{FunctionDecoderDoNothing}のスケッチを
+== ファンクションデコーダの雛形を作る
+まずは@<tt>{DCC}ファンクションデコーダの元となる、何もしない雛形のファンクションデコーダ@<tt>{FunctionDecoderDoNothing}のスケッチを
 紹介します。
 
 //image[dccsyori][DCCデコーダ処理ブロック図][scale=1]
 
-@<tt>{Dcc}の受信処理は@<tt>{DCC}ライブラリ側で行っていますので、デコーダを作る際は速度インベントの処理、ファンクションイベントの
+@<tt>{DCC}の受信処理は@<tt>{DCC}ライブラリ側で行っていますので、デコーダを作る際は速度インベントの処理、ファンクションイベントの
 処理だけを作成すればよいので簡単に作れます。
 
 @<tt>{DEBUG}フラグを有効にすると、@<tt>{DCC}から受信した速度のイベント、ファンクションのイベントを@<tt>{Arduino Nano }のシリアル出力しますので、
@@ -128,7 +134,7 @@ https://github.com/DccShield/FunctionDecoderDoNothing
 
 === setup()の実装
 @<tt>{Arduino}で用意されている@<tt>{setup()}は、@<tt>{Arduino Nano }に電源が入った時に最初の一度だけ処理させる関数です。
-この何もしないファクションデコーダでは、@<tt>{DEBUG}用のシリアルポートの初期化、@<tt>{NmraDcc}の初期化、現在時刻の初期化を行なっています。
+この何もしない雛形のファクションデコーダでは、@<tt>{DEBUG}用のシリアルポートの初期化、@<tt>{NmraDcc}の初期化、現在時刻の初期化を行なっています。
 
 //emlistnum{
 #ifdef DEBUG
@@ -160,7 +166,7 @@ gPreviousL5 = millis();
 === loop()の実装
 @<tt>{Arduino}で用意されている@<tt>{loop()}内のプログラムを永遠に繰り返す関数です。
 
-本来は色々な処理を記述しますが、@<tt>{Dcc}受信関数のコール、@<tt>{10msec}毎に何もしない処理を行なっています。
+本来は色々な処理を記述しますが、@<tt>{DCC}受信関数のコール、@<tt>{10msec}毎に何もしない処理を行なっています。
 
 //emlistnum{
 void loop() {
@@ -776,14 +782,193 @@ resetFunc();
 #@# 発光ギミックを搭載したLEDファンクションデコーダを作る
 #@#-----------------------------------------------------------------------------
 
-== 発光ギミックを搭載したLEDファンクションデコーダを作る
+== FX照明効果を搭載したLEDファンクションデコーダを作る
+
+前項に紹介した@<tt>{LED}ファンクションデコーダに@<tt>{FX}照明効果を実装します。ヘッドライトを点滅させたり様々な点灯ができます。
+今回ご紹介する@<tt>{FX}照明効果は以下パターンを用意しました。
+
+//table[FX][FX効果一覧]{
+パターン	効果
+1	すぐに点灯(Fast ON)
+2	もやっと点灯(Slow ON)
+3	三角波(Traiangle Wave)
+4	ランダム(Random)
+5	マーズライト(Mars Light)
+6	フラッシュライト(Flash Light)
+7	シングルパルススロトボ(Single plues strobe)
+8	ダブルパルスストロボ(Double pulse strobe)
+9	ミディアムパルスストロボ(medium pulse strobo)
+10	グロー管蛍光灯(Fluorescent lamp)
+11	グロー管蛍光灯切れそう(broken Fluorescent lamp)
+12	消灯
+13	トリプルフラッシュ
+14	ランダムフォー
+//}
+
+「@<tt>{Arduino}で作るジオラマの仕掛けとスケッチの小技」の 6.3　ステップ、シーケンス、パターン制御で紹介している
+@<tt>{SerLight}クラスを使用します。
 
 
+=== スケッチのダウンロード
 
+@<tt>{github}からダウンロードしてください。
 
+@<href>{https://github.com/DccShield/FunctionDecoderLedSEQ,[ FunctionDecoderLedSeqスケッチ ]}
 
+@<tt>{https://github.com/DccShield/FunctionDecoderLedSEQ}
 
+=== スケッチの構成
 
+以下のソースファイルが @<tt>{FunctionDecoderLedSeq}のスケッチに含まれています。
+
+@<tt>{NmraDcc.cpp            :　NmraDcc}ライブラリ
+
+@<tt>{NmraDcc.h　            :　NmraDcc}ライブラリ用ヘッダファイル
+
+@<tt>{DccCV.h                :　}定義ファイルとグローバル変数宣言
+
+@<tt>{SeqLight.cpp           :　}シーケンス点灯用クラス
+
+@<tt>{SeqLight.h             :　}シーケンス点灯用クラス用ヘッダファイル
+
+@<tt>{FunctionDecoderLedSeq.ino :　FX}照明効果ファンクションデコーダスケッチ
+
+=== プログラムの説明
+
+全文を掲載するとページ数が多くなりますので前章の@<tt>{LED}ファンクションデコーダからの変更点をご紹介します。
+@<tt>{FunctionDecoderLedSeq.ino}の先頭部分に、@<tt>{SeqLight HeadLight = SeqLight(PIN_F0_F, 0);} の行を
+追加して@<tt>{SeqLight}クラスを@<tt>{HeadLight}という名前を付けて実体化（オブジェクト化）しています。
+スマイルデコーダの@<tt>{D3}ポートが基板の@<tt>{PAD}に出ていますので、@<tt>{SeqLight()}のコンストラクタに
+@<tt>{LED}ポート@<tt>{(PIN_F0_F)D3 PD3}を設定しています。
+
+//emlistnum{
+void setup()
+{
+  //ファンクションの割り当てピン初期化
+
+//  pinMode(PIN_F0_F, OUTPUT);
+//  digitalWrite(PIN_F0_F, OFF);
+  HeadLight.OnOff(OFF);
+
+  pinMode(PIN_F0_R, OUTPUT);
+  digitalWrite(PIN_F0_R, OFF);
+//}
+
+setup()関数内の、5行目と6行目のヘッドライト用ポートを初期化している箇所をコメントアウトし代わりに
+HeadLight.OnOff(OFF);を追加しLEDを消灯させます。
+※pinModeの設定はHeadLightクラスを実体化（オブジェクト化）した時に初期化済みです。
+
+//emlistnum{
+void loop() {
+  Dcc.process();
+  if ( (millis() - gPreviousL5) >= 10){ // 10msec
+    HeadLight.stateCheck();
+    FunctionProcess();
+    gPreviousL5 = millis();
+  }
+}
+//}
+
+@<tt>{loop()}関数内の@<tt>{4}行目にメンバ関数の@<tt>{HeadLight.stateCheck();}を追加して10ms周期でステートマシンを動かします。
+この関数をコールするたびに@<tt>{FX}照明効果の表現を再現します。
+
+//emlistnum{
+void FunctionProcess(void){
+// F0 受信時の処理
+    if(gState_F0 > 0) {                   // DCC F0 コマンドの点灯処理
+      if( gDirection == 1){                // Reverse 前進(DCS50Kで確認)
+//      digitalWrite(PIN_F0_F, HIGH);
+        HeadLight.OnOff(ON);
+        digitalWrite(PIN_F0_R, LOW);
+      } else {                             // Forward 後進(DCS50Kで確認)
+//      digitalWrite(PIN_F0_F, LOW);
+        HeadLight.OnOff(OFF);
+        digitalWrite(PIN_F0_R, HIGH);
+      }
+    }
+//}
+
+ファンクション受信によるイベント関数 @<tt>{FunctionProcess(void) }の@<tt>{F0}コマンドを受信している箇所を変更します。
+5行目の@<tt>{digitalWrite(PIN_F0_F, HIGH);}の@<tt>{LED}を点灯する一文をコメントアウトし@<tt>{HeadLight.OnOff(ON);}を追加します。
+同じように消灯処理を行なっている9行目の@<tt>{digitalWrite(PIN_F0_F, LOW);}をコメントアウトし@<tt>{HeadLight.OnOff(OFF);}
+を追加します。
+
+//emlistnum{
+void Dccinit(void)
+{
+省略
+  gCV49_fx = Dcc.getCV( CV_49_F0_FORWARD_LIGHT ) ;
+  HeadLight.Change( gCV49_fx);
+//}
+
+デジトラックスのデコーダと同じように@<tt>{CV49}を使用して@<tt>{FX}照明効果の種類を変更できるようにしておきます。
+※尚本スケッチではデジトラックスのデコーダの様に細かな条件を付けられる様にしておりません。
+メンバ関数 @<tt>{HeadLight.Change()}を使用して@<tt>{FX}照明効果の種類を切り替えられます。
+
+@<tt>{SeqLight.cpp}をデコーダー様に@<tt>{2}箇所変更してあります。
+@<tt>{CV49}の設定で@<tt>{FX}照明効果を切り替えられる様にメンバ関数@<tt>{Change()}を追加しました。
+引数に@<tt>{0〜13}の数値を入れて@<tt>{FX}照明効果を切り替えることができます。
+//emlistnum{
+void SeqLight::Change(unsigned char mode)
+{
+  switch(mode){
+    case 0: ptn = ptn1;
+    break;
+    case 1: ptn = ptn2;
+
+省略
+//}
+
+@<tt>{DCC}のコマンドは連続で受信されるため、@<tt>{SeqLight}クラス内のステートマシンが停滞しない様にメンバ関数@<tt>{OnOff()}に
+変化があったら@<tt>{state}を変更する処理を追加しました。
+//emlistnum{
+void SeqLight::OnOff(unsigned char sw)
+{
+  static unsigned char presw = 0;
+
+  if(presw == sw) // 変化がなかったら抜ける（ずっとstate書き換えられてしまう）
+    return;
+
+  if( sw == 0 )
+    state = ST_OFF;
+  else if( sw == 1)
+    state = ST_ON;
+
+  presw = sw;
+}
+//}
+3行目の@<tt>{static}修飾子で前値を記録する@<tt>{presw}変数を初期化します。
+5行目で前値の@<tt>{presw}と@<tt>{sw}を比較して変化が無かったら@<tt>{state}を書き換えずに関数を抜けます。
+変化があった場合は@<tt>{state}を変更して@<tt>{SeqLight}クラス内のステートマシンにイベントを伝えます。
+13行目に前値を更新します。
+以上のスケッチの変更でヘッドライトのポート@<tt>{D3}に@<tt>{FX}照明効果を実装することができます。
+
+@<tt>{FX}照明効果のパターンは、@<tt>{SeqLight.h}内で設定されています。
+例えばマーズライトは以下の様にコマンドと時間と@<tt>{PWM}値を設定しています。
+時間は@<tt>{loop()}関数のところで@<tt>{10ms}毎に@<tt>{HeadLight.stateCheck()}関数を読んでいますので、
+@<tt>{FX}照明効果の処理は約@<tt>{10ms}毎に行われるため、時間設定で@<tt>{30}を設定すると、@<tt>{30 x 10ms = 300ms}出力する事になります。
+
+//emlistnum{
+unsigned char ptn6[4][3]={
+                          {'I',  0,  0},
+                          {'O', 30,255},
+                          {'S', 20,128},
+                          {'L',  0,  0}};//フラッシュライト(Flash light)
+//}
+マーズライトの例ですと、
+1行目は二次元変数の大きさを設定しています。4行のパターンを使用していますので@<tt>{[4]}、1行3要素設定していますので固定値の@<tt>{[3]}となり
+@<tt>{ptn[4][3]}で初期化しています。
+点灯パターン数を変える場合先頭の@<tt>{[4]}の部分の4の数字を変えます。
+
+2行目は@<tt>{'I'}で初期状態を設定し、0時間、@<tt>{PWM}値0を出力します。
+
+3行目は@<tt>{'O'}で定値出力で、@<tt>{300ms}間、@<tt>{PWM}値@<tt>{255}を出力します。
+
+4行目は@<tt>{'S'}でスイープ出力で、@<tt>{200ms}間掛けて、@<tt>{PWM}値を@<tt>{255}から@<tt>{128}にスイープ（スロープ、ランプ）で制御します。
+
+5行目は@<tt>{'L'}でループ設定
+
+という動きをさせています。
 
 
 
@@ -798,12 +983,12 @@ resetFunc();
 モータデコーダはコマンドステーションからのスロット値からモータ駆動用@<tt>{PWM}を出力するまでに様々な処理を行うため数段階に分けて説明していきます。
 
 === 車両用デコーダのベース基板
-//image[arduinoDecoder][arduinoベースのDCCデコーダ][scale=1]
+//image[arduinoDecoder][ArduinoベースのDCCデコーダ][scale=1]
 DCC電子工作連合は左から、スマイルデコーダ、@<tt>{MP3}サウンドデコーダ@<tt>{V6　N18、SmileDecoder N18、SmileMotorDecoder、SmileFunctionDecoder}
 の基板が用意されています。
 ※@<tt>{SmileMotorDecoder、SmileFunctionDecoder}は@<tt>{Attiny85}を使用したデコーダになります。
 
-この章ではマイコンに@<tt>{Atmega328}を使用し@<tt>{Arduino}プラットフォームで動作するスマイルデコーダを使用した車両用デコーダーを紹介します。
+この章ではマイコンに@<tt>{ATmega328}を使用し@<tt>{Arduino}プラットフォームで動作するスマイルデコーダを使用した車両用デコーダーを紹介します。
 
 === スマイルデコーダのピンアサイン
 @<tt>{Arduino Nano DCC Shield}とは違うので@<img>{arduinoport}に表にまとめました。スマイルデコーダとなごでんさんのスマイルデコーダとは@<tt>{PWM_A}と@<tt>{PWM_B}の
@@ -1116,7 +1301,7 @@ void MOTOR_Main(int inSpeedCmd, int inDirection)
 
 == BEMF処理に対応したモーターファンクションデコーダを作る
 
-この章からはスロット値からスケール変換してPWM出力を行う簡易版から速度補償を組み込んだモータデコーダを紹介します。
+この章からはスロット値からスケール変換して@<tt>{PWM}出力を行う簡易版から速度補償を組み込んだモータデコーダを紹介します。
 @<img>{motorDecoderL4}の様なブロック図になります。
 
 //image[motorDecoderL4][モーター処理の最終形][scale=1]
