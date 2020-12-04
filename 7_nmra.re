@@ -79,7 +79,7 @@ notifyServiceMode()	サービスモードの入ると読み出されます。
 @<tt>{pin( ExtIntNum , ExitIntPinNum , EnablePullup );}
 
 ==== パラメーター
-@<tt>{ExtIntNum     : }割り込み番号。@<tt>{ArduinoNANO}の場合、@<tt>{0:int0(PIN2) 1:int1(PIN3)} の設定できます。
+@<tt>{ExtIntNum     : }割り込み番号。@<tt>{Arduino Nano}の場合、@<tt>{0:int0(PIN2) 1:int1(PIN3)} の設定できます。
 
 @<tt>{ExitIntPinNum : DCC}信号を入力ピンを設定します。@<tt>{ExtIntNum}で設定した入力ピンになります。
 
@@ -241,9 +241,30 @@ void NmraDcc::pin(uint8_t ExtIntNum,uint8_t ExtIntPinNum,uint8_t EnablePullup)
 3.アクセサリデコーダの@<tt>{init()}例です。@<tt>{ops}書き換え時の@<tt>{DCC}アドレスを@<tt>{CV33}にあることを
 設定しています。
 
-デコーダを自作する方は、@<tt>{MAN_ID_NUMBER を MAN_ID_DIY }に書き換えてください。
 
-※@<tt>{MAN_ID_DIY（自作デコーダ用） のIDは 0x0D} です。
+====[column] 製造者ID(マニファクチャID）について
+
+デコーダから@<tt>{CV8}を読み出すと製造者@<tt>{ID}（@<tt>{NMRA}で認証された番号）を読み出すことができます。
+この製造者@<tt>{ID(DCC Manufacturer ID Numbers)}は@<tt>{NMRA}のサイトの、
+@<tt>{https://www.nmra.org/manufacturer-id-numbers}から番号に紐づけられている製造者の確認ができます。
+デコーダーを自作する場合は、@<tt>{MAN_ID_DIY}（自作デコーダ用）の@<tt>{ID}は@<tt>{0x0D} を設定してください。
+
+//blankline
+
+余談ですが、国内では@<tt>{KATO(0x28:40)}、永末@<tt>{(0x67:103)}、@<tt>{DCC}電子工作連合では@<tt>{DektopStation(0x8c:140)}、
+@<tt>{Nucky(0x9C:156)}、@<tt>{Nagoden(0x6c:108)}、@<tt>{Maison de DCC(0xA6:166)}の@<tt>{6}メーカーが登録されています。
+
+//blankline
+
+@<tt>{NmraDCC}ライブラリを使用した@<tt>{DCC}デコーダを作られると比較的簡単に取得できるかと思います。
+私の場合作成したデコーダを@<tt>{４}回ほどアメリカに送って@<tt>{2}年ちょっとで取得できました。
+@<tt>{NMRA}のサイトの@<tt>{https://www.nmra.org/dcc-working-group}の
+@<tt>{DCC Section}を読んでもらい応募してみてください。（大変申し訳ございませんが、@<tt>{DCC}電子工作連合では製造者@<tt>{ID}取得に関してアドバイスはいたしません）
+
+====[/column]
+
+
+
 
 //embed[latex]{
 \clearpage
