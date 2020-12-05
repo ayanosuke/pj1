@@ -3,11 +3,8 @@
 Arduino Nano DCC shield を使用してDCC用デコーダとジオラマ用アクセサリーを作成しレイアウトに組み込むのを目的としています。
 本誌で紹介する工作例をご紹介します。
 
-//image[arduinoNANOdcc][Arduino NANO DCC shield 組み立て例]
+//image[arduinoNANOdcc][Arduino NANO DCC shield 組み立て例][scale=0.5]
 
-//embed[latex]{
-\clearpage
-//}
 
 == DCC用デコーダ
 
@@ -167,7 +164,7 @@ SDカード内のMP3を再生できます。駅の構内放送等に使用しま
 
 === ［ジオラマ］USB加湿器を使用した発煙装置
 
-//image[smoke1][発煙装置][scale=1]
+//image[smoke1][発煙装置][scale=0.8]
 
 ■紹介ページ
 
