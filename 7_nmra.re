@@ -242,11 +242,11 @@ void NmraDcc::pin(uint8_t ExtIntNum,uint8_t ExtIntPinNum,uint8_t EnablePullup)
 設定しています。
 
 
-====[column] 製造者ID(マニファクチャID）について
+====[column] メーカー個別番号について
 
-デコーダから@<tt>{CV8}を読み出すと製造者@<tt>{ID}（@<tt>{NMRA}で認証された番号）を読み出すことができます。
-この製造者@<tt>{ID(DCC Manufacturer ID Numbers)}は@<tt>{NMRA}のサイトの、
-@<tt>{https://www.nmra.org/manufacturer-id-numbers}から番号に紐づけられている製造者の確認ができます。
+デコーダから@<tt>{CV8}を読み出すとメーカー個別番号（@<tt>{NMRA}で認証された番号）を読み出すことができます。
+このメーカー個別番号@<tt>{(DCC Manufacturer ID Numbers)}は@<tt>{NMRA}のサイトの、
+@<tt>{https://www.nmra.org/manufacturer-id-numbers}から番号に紐づけられているデコーダーのメーカを調べられます。
 デコーダーを自作する場合は、@<tt>{MAN_ID_DIY}（自作デコーダ用）の@<tt>{ID}は@<tt>{0x0D} を設定してください。
 
 //blankline
@@ -259,7 +259,7 @@ void NmraDcc::pin(uint8_t ExtIntNum,uint8_t ExtIntPinNum,uint8_t EnablePullup)
 @<tt>{NmraDCC}ライブラリを使用した@<tt>{DCC}デコーダを作られると比較的簡単に取得できるかと思います。
 私の場合作成したデコーダを@<tt>{４}回ほどアメリカに送って@<tt>{2}年ちょっとで取得できました。
 @<tt>{NMRA}のサイトの@<tt>{https://www.nmra.org/dcc-working-group}の
-@<tt>{DCC Section}を読んでもらい応募してみてください。（大変申し訳ございませんが、@<tt>{DCC}電子工作連合では製造者@<tt>{ID}取得に関してアドバイスはいたしません）
+@<tt>{DCC Section}を読んでもらい応募してみてください。（大変申し訳ございませんが、@<tt>{DCC}電子工作連合ではメーカー個別番号の取得に関してアドバイスはいたしません）
 
 ====[/column]
 
@@ -611,12 +611,15 @@ void notifyDccReset(uint8_t hardReset )
 \clearpage
 //}
 
+
+
+
 === notifyDccSpeed()
 [ユーザープログラムで使用します]
 
 ファンクションデコーダの速度コマンドのコールバック関数です。
 
-ユーザープログラムにて速度の処理を行います。
+コマンドステーションから送信された速度コマンドの受信処理を行います。
 
 ==== 構文
 @<tt>{notifyDccSpeed( Addr, AddrType, Speed, Dir, SpeedSteps )}
@@ -627,7 +630,9 @@ void notifyDccReset(uint8_t hardReset )
 @<tt>{AddrType : DCC_ADDR_SHORT(0) or DCC_ADDR_LONG(1)}
 
 @<tt>{Speed : Decoder speed. 0 = Emergency stop}
+
 @<tt>{                       1 = Regular stop}
+
 @<tt>{                       2 to SpeedSteps = Speed step 1 to max.}
 
 @<tt>{Dir : DCC_DIR_REV(0) or DCC_DIR_FWD(1)}
@@ -655,20 +660,43 @@ extern void notifyDccSpeed( Addr, AddrType, Speed, Dir, SpeedSteps )
 }
 //}
 
-結果
+引数@<tt>{Addr}は、受信した自身の@<tt>{DCC}アドレスが格納されます。他の@<tt>{DCC}アドレスは受信されません。
+
+引数@<tt>{AddrType}は、@<tt>{8bit}ショート@<tt>{DCC}アドレス@<tt>{[0]}か、@<tt>{16bit}ロング@<tt>{DCC}アドレス@<tt>{[1]}が使われているかのフラグが格納されます。
+
+引数@<tt>{Speed}は、コマンドステーションから送信された速度値が格納されます。
+
+引数@<tt>{Dir}は、前進@<tt>{[1]}、後進@<tt>{[0]}が格納されます。
+
+引数@<tt>{SpeedSteps}は、コマンドステーションが設定された@<tt>{STEP}情報、
+スピードステップ@<tt>{14[15]}、スピードステップ@<tt>{28[29]}、スピードステップ@<tt>{128[127]}が格納されます。
+※実際のステップ数から異なる数値が格納されます。
+
+====[column] コマンドステーションから受信例
+ステップモードを変えた時のシリアルデバックポートに出力される事例を紹介します。
 
 @<tt>{128STEP}モード
 
 @<tt>{ Speed - ADR: 3, AddrType: 0, SPD: 2, DIR: 1, SpeedSteps: 127}
 
+//blankline
+
 @<tt>{ 28STEP}モード
 
 @<tt>{ Speed - ADR: 3, AddrType: 0, SPD: 1, DIR: 1, SpeedSteps: 29}
+
+//blankline
 
 @<tt>{ 14STEP}モード(@<tt>{ DSC50Kは28STEP}モードで@<tt>{ Speed}が間引かれて送信されます)
 
 @<tt>{ Speed - ADR: 3, AddrType: 0, SPD: 1, DIR: 1, SpeedSteps: 29}
 
+
+====[/column]
+
+
+このサンプルは、受信した速度コマンドをそのままgSpeedRef変数に代入指定います。この方法では
+ステップ数によって数値の上限が変わってしまいます。
 
 //emlistnum{
 extern void notifyDccSpeed( Addr, AddrType, Speed, Dir, SpeedSteps )
@@ -681,8 +709,12 @@ extern void notifyDccSpeed( Addr, AddrType, Speed, Dir, SpeedSteps )
 }
 //}
 
-ちょっと乱暴処理で、コマンドステーションを 28STEPモード にするとTOPスピードが28止まりに
-なってしまいます。
+//embed[latex]{
+\clearpage
+//}
+
+速度の受信はステップ数を加味して以下のスケッチの様に@<tt>{ SpeedStep} の値で @<tt>{ aSpeedRef が 255 でMax}になるようにスケーリングの
+処理を行います。
 
 //emlistnum{
 extern void notifyDccSpeed( Addr, AddrType, Speed, Dir, SpeedSteps )
@@ -695,7 +727,7 @@ extern void notifyDccSpeed( Addr, AddrType, Speed, Dir, SpeedSteps )
 	}
 	else
 	{
-		//緊急停止信号受信時の処理 //Nagoden comment 2016/06/11
+		//緊急停止信号受信時の処理
 		aSpeedRef = 0;
   }
   gSpeedCmd = aSpeedRef;
@@ -720,9 +752,8 @@ extern void notifyDccSpeed( Addr, AddrType, Speed, Dir, SpeedSteps )
   }
 }
 //}
-おすすめ。
 
-@<tt>{ SpeedStep} の値で @<tt>{ aSpeedRef が 255 でMax}になるように、スケーリングしています。
+
 
 
 
@@ -877,16 +908,16 @@ extern void notifyDccFunc(uint16_t Addr, DCC_ADDR_TYPE AddrType,
 === notifyDccAccTurnoutBoard()
 ターンアウトアクセサリデコーダのボード指向コールバック関数です。
 
-CV29_OUTPUT_ADDRESS_MODE が設定されていない場合に最も有用です．
+@<tt>{CV29_OUTPUT_ADDRESS_MODE }が設定されていない場合に最も有用です。
 
-このタイプのデコーダは，ボードごとに4つのペアのターンアウト出力を持ちます．
+このタイプのデコーダはボードごとに4つのペアのターンアウト出力を持ちます。
 
-OutputPower は，電源が入っていれば 1，そうでなければ 0 です．
+@<tt>{OutputPower} は電源が入っていれば@<tt>{ 1，}そうでなければ@<tt>{ 0} です。
 
-Dcc.init( MAN_ID_NUMBER, MAN_VER_NUMBER, FLAGS_DCC_ACCESSORY_DECODER, 0 );の
-様に FLAGS_OUTPUT_ADDRESS_MODE のフラグがOFFの場合に使用できます。
+@<tt>{Dcc.init( MAN_ID_NUMBER, MAN_VER_NUMBER, FLAGS_DCC_ACCESSORY_DECODER, 0 );}の
+様に @<tt>{FLAGS_OUTPUT_ADDRESS_MODE} のフラグが@<tt>{OFF}の場合に使用できます。
 
-DCC電子工作連合ではこのコールバック関数は使用していません。
+@<tt>{DCC}電子工作連合ではこのコールバック関数は使用していません。
 
 
 ==== 構文
@@ -898,14 +929,14 @@ DCC電子工作連合ではこのコールバック関数は使用していま�
 @<tt>{BoardAddr : }ボードアドレスごとに指定します．@<tt>{CV 1 LSB }および@<tt>{ CV 9 MSB }に相当します。
 
 @<tt>{OutputPair :} 出力ペア番号．@<tt>{0～3 }の範囲です。
-アクセサリーパケットの 3 つの@<tt>{ DDD} ビットの上位 2 ビットに相当します。
+アクセサリーパケットの@<tt>{3}つの@<tt>{ DDD} ビットの上位@<tt>{2}ビットに相当します。
 
-@<tt>{Direction :} ターンアウト方向。0 または 1 の値を持ちます。
-0 または 1 の値を持ちます。 アクセサリーパケットの @<tt>{DDD3} ビットのビット 0 に相当します。
+@<tt>{Direction :} ターンアウト方向。@<tt>{0}または@<tt>{1}の値を持ちます。
+@<tt>{0}または@<tt>{1}の値を持ちます。 アクセサリーパケットの @<tt>{DDD3} ビットのビット@<tt>{0}に相当します。
 
-@<tt>{OutputPower :} 出力オン/オフ。パケットCビットに相当します。以下の値を持ちます。
-0 - 出力ペアがオフ。
-1 - 出力ペアがオンです。
+@<tt>{OutputPower :} 出力オン@<tt>{/}オフ。パケット@<tt>{C}ビットに相当します。以下の値を持ちます。
+@<tt>{0 - }出力ペアがオフ。
+@<tt>{1 - }出力ペアがオンです。
 
 //table[TurnoutBoard][BoardAddrとOutputPairの関係]{
 t/c	BoardAddr	OutputPair	Direction
@@ -981,7 +1012,7 @@ void notifyDccAccTurnoutBoard( uint16_t BoardAddr, uint8_t OutputPair,
 
 @<tt>{Direction : }ターンアウト方向。0または1の値を持ちます。アクセサリーパケットの@<tt>{DDD3}ビットのビット0に相当します。
 
-@<tt>{OutputPower :} 出力オン/オフ。パケットCビットに相当します。以下の値を持ちます。
+@<tt>{OutputPower :} 出力オン/オフ。パケット@<tt>{C}ビットに相当します。以下の値を持ちます。
 
 0 - 出力はオフです。
 
@@ -1026,9 +1057,9 @@ void notifyDccAccTurnoutOutput( uint16_t Addr, uint8_t Direction,
 === notifyDccAccBoardAddrSet()
 ターンアウトアクセサリーデコーダのボード指向のコールバック関数です。
 
-この通知は、新しいボードアドレスが、受信した次の@<tt>{DCC}ターンアウトパケットのアドレスに設定されている場合に通知されます。
+この通知は新しいボードアドレスが受信した次の@<tt>{DCC}ターンアウトパケットのアドレスに設定されている場合に通知されます。
 
-これは、上記の@<tt>{ setAccDecDCCAddrNextReceived()} メソッドで有効になります。
+これは上記の@<tt>{ setAccDecDCCAddrNextReceived()} メソッドで有効になります。
 
 ==== 構文
 @<tt>{notifyDccAccBoardAddrSet( BoardAddr )}
@@ -1048,7 +1079,7 @@ void notifyDccAccTurnoutOutput( uint16_t Addr, uint8_t Direction,
 
 ターンアウトアクセサリーデコーダの出力指向コールバック関数です。
 
-この通知は、新しい出力アドレスが、受信した次の@<tt>{DCC}ターンアウトパケットのアドレスに設定されている場合です。
+この通知は新しい出力アドレスが、受信した次の@<tt>{DCC}ターンアウトパケットのアドレスに設定されている場合です。
 
 これは、上記の @<tt>{setAccDecDCCAddrNextReceived() }メソッドで有効になります。
 
@@ -1059,7 +1090,7 @@ void notifyDccAccTurnoutOutput( uint16_t Addr, uint8_t Direction,
 
 ==== パラメーター
 
-@<tt>{Addr : }出力アドレスごとに4つの出力ペアを持つ標準的なアクセサリーデコーダの場合、1ボードあたり4つのアドレスがあります。
+@<tt>{Addr : }出力アドレスごとに4つの出力ペアを持つ標準的なアクセサリーデコーダの場合1ボードあたり4つのアドレスがあります。
 
 ==== 戻り値
 なし
@@ -1284,16 +1315,16 @@ void notifyCVResetFactoryDefault()
 
 [ユーザープログラムで使用します]
 
-@<tt>{CV} の書き込みを確認しなければならない場合に呼び出されます．
-このコールバックは、このデコーダが引き込む電流を 6ms +/- 1ms の間、少なくとも 60mA 増加させなければなりません。
-@<tt>{notifyServiceMode()}の値で、@<tt>{DIRECT MODE }時のみ@<tt>{Ack}を返す様に作ると、運転中支障なくCV値の変更が
+コマンドステーションからデコーダーの@<tt>{CV}を読み取る命令が届いた時に応答する時に呼び出されます．
+このコールバック関数は、デコーダが消費する電流を @<tt>{6ms ±1ms} の間、@<tt>{60mA}以上増やす必要があります。
+@<tt>{notifyServiceMode()}の値で、@<tt>{DIRECT MODE }時のみ@<tt>{Ack}を返す様に作ると、運転中支障なく@<tt>{DCV}値の変更が
 可能になります。
 
 @<tt>{NmraDcc.cppのackCV()}から呼び出されます。
 
-モーターデコーダの場合は、モータON、6msウエイト、モータOFFさせます。
+モーターデコーダの場合は、モータ@<tt>{ON}、@<tt>{6ms}ウエイト、モータOFFさせます。
 
-ファンクションデコーダの場合は、LED ON、6msウエイト、LED OFFさせます。しかし消費電流が小さい為コマンドステーション側で
+ファンクションデコーダの場合は、@<tt>{LED ON、6ms}ウエイト、@<tt>{LED OFF}させます。しかし消費電流が小さい為コマンドステーション側で
 認識されないことが多いです。
 
 ==== 構文
@@ -1311,6 +1342,37 @@ void notifyCVAck(void)
     MOTOR_Ack();
 }
 //}
+
+//embed[latex]{
+\clearpage
+//}
+
+====[column] CV ACK信号の作り方
+
+@<tt>{MP3}デコーダやワンコインデコーダではモータを繋げて動かすことが前提ですのでモータを動かすことで代用しています。
+もしモータが無いデコーダではどうすればいいか？トランジスタ出力回路と抵抗を付けて電流をダミー消費する回路を作るしかありません。
+@<tt>{PIN_CVACK}には、ピン番号を入れて下さい。
+//emlist[]{
+void notifyCVAck(void)
+{
+  analogWrite( PIN_CVACK, 255 );
+  delay( 8 );
+  analogWrite( PIN_CVACK, 0 );
+}
+//}
+
+//image[dccack][電流をダミー消費する回路][scale=0.8]
+
+なお@<tt>{ATtiny85}版のスマイルファンクションデコーダは空いているピンが無いのと電流を取るのがむつかしいので最初から
+@<tt>{CV}値がコマンドステーションから読み取れない事を明記しています。
+
+
+====[/column]
+
+
+
+
+
 
 //embed[latex]{
 \clearpage
