@@ -4,24 +4,25 @@
 
 === 雛形のファンクションデコーダ
 
-DCC信号を受信するだけのスケッチです
+@<tt>{DCC}信号を受信するだけのスケッチです
 
-https://github.com/DccShield/FunctionDecoderDoNothing
+@<tt>{https://github.com/DccShield/FunctionDecoderDoNothing}
 
 //blankline
 
 === LEDファンクションデコーダ
 
-LEDの点灯と消灯がファンクションコマンドから制御できるスケッチです
+@<tt>{LED}の点灯と消灯がファンクションコマンドから制御できるスケッチです
 
-https://github.com/DccShield/FunctionDecoderLed
+@<tt>{https://github.com/DccShield/FunctionDecoderLed}
 
 //blankline
 
 === FX照明効果ファンクションデコーダ
 
 各種照明効果を実装したスケッチです
-https://github.com/DccShield/FunctionDecoderLedSEQ
+
+@<tt>{https://github.com/DccShield/FunctionDecoderLedSEQ}
 
 //blankline
 
@@ -29,36 +30,33 @@ https://github.com/DccShield/FunctionDecoderLedSEQ
 
 パンタスパーク効果を実装したスケッチです
 
-https://github.com/DccShield/FunctionDecoderLEDpanta
+@<tt>{https://github.com/DccShield/FunctionDecoderLEDpanta}
 
 //blankline
 
 
 === モータファンクションデコーダ
 
-スロット値をPWM値に変換出力するだけのデコーダです
+スロット値を@<tt>{PWM}値に変換出力するだけのデコーダです
 
-https://github.com/DccShield/FunctionDecoderMotor_L1
+@<tt>{https://github.com/DccShield/FunctionDecoderMotor_L1}
 
 //blankline
 
 === BEMFに対応したモーターファンクションデコーダ
 
-BEMF機能をついかしたモータファンクションデコーダです
+@<tt>{BEMF}機能をついかしたモータファンクションデコーダです
 
-https://github.com/DccShield/FunctionDecoderMotor_L4
+@<tt>{https://github.com/DccShield/FunctionDecoderMotor_L4}
 
 //blankline
 
-//embed[latex]{
-\clearpage
-//}
 
 === サーボモータファンクションデコーダ
 
 ２台のサーボモータを動かすことができるファンクションデコーダです
 
-https://github.com/DccShield/FunctionDecoderServo
+@<tt>{https://github.com/DccShield/FunctionDecoderServo}
 
 //blankline
 
@@ -66,15 +64,15 @@ https://github.com/DccShield/FunctionDecoderServo
 
 ２台のサーボモータを動かすことができるアクセサリデコーダです
 
-https://github.com/DccShield/AccDecoderServo
+@<tt>{https://github.com/DccShield/AccDecoderServo}
 
 //blankline
 
 === MP3 サウンドデコーダ
 
-FRobottoDFPlayerMini を使用したMP3 サウンドファンクションデコーダです
+@<tt>{FRobottoDFPlayerMini }を使用した@<tt>{MP3} サウンドファンクションデコーダです
 
-https://github.com/DccShield/FunctionDecoderMP3
+@<tt>{https://github.com/DccShield/FunctionDecoderMP3}
 
 //blankline
 
@@ -88,7 +86,7 @@ https://github.com/DccShield/FunctionDecoderMP3
 
 レイアウト用の閉塞信号機スケッチです
 
-https://github.com/DccShield/BlockSignalling
+@<tt>{https://github.com/DccShield/BlockSignalling}
 
 //blankline
 
@@ -96,7 +94,7 @@ https://github.com/DccShield/BlockSignalling
 
 出発信号機スケッチです
 
-https://github.com/DccShield/DepartureSignal
+@<tt>{https://github.com/DccShield/DepartureSignal}
 
 //blankline
 
@@ -105,8 +103,8 @@ https://github.com/DccShield/DepartureSignal
 
 === DCC通信モニタ（DCC スニファ）
 
-DCC通信をモニタするスケッチです
+@<tt>{DCC}通信をモニタするスケッチです
 
-https://github.com/DccShield/DccMonitor
+@<tt>{https://github.com/DccShield/DccMonitor}
 
 //blankline
