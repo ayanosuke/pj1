@@ -194,7 +194,7 @@ void loop() {
 === dccinit()の実装
 
 デコーダの初期化を行う関数です。
-@<tt>{Dcc}クラスの初期設定、製造者IDの設定、自分の@<tt>{DCC}アドレスの設定を行います。
+@<tt>{Dcc}クラスの初期設定、メーカー個別番号の設定、自分の@<tt>{DCC}アドレスの設定を行います。
 
 //emlistnum{
 //DCCの応答用負荷ピン
@@ -299,10 +299,10 @@ CV値が変化した時の処理
 @<tt>{DCC}から制御ができます。
 
 === 完成写真
-//image[ledfunction2][完成写真][scale=0.8]
+//image[ledfunction2][完成写真][scale=0.5]
 
 === 接続図
-//image[ledfunction1][LEDファンクションデコーダの接続][scale=0.8]
+//image[ledfunction1][LEDファンクションデコーダの接続][scale=0.5]
 
 オプションの抵抗基板に@<tt>{1kΩ}と@<tt>{LED}を実装しました。
 
@@ -1025,6 +1025,10 @@ unsigned char ptn6[4][3]={
 @<tt>{FunctionDecoderLEDpanta.ino}に追加したスケッチは@<tt>{FunctionDecoderLedSeq.ino}と似た様な追加を
 行なっています。見比べて参照してください。
 
+//embed[latex]{
+\clearpage
+//}
+
 === PantaSpark.hの実装
 //emlistnum{
 const unsigned char ptn1[10][3]={
@@ -1046,7 +1050,7 @@ const unsigned char ptn1[10][3]={
 光の強弱と点灯パターンを作っています。
 
 表の横軸は時間でひとマス10ms、縦軸はPWMの値になります。
-//image[panta1][パンタスパーク点灯パターン][scale=1]
+//image[panta1][パンタスパーク点灯パターン][scale=0.8]
 
 //emlistnum{
 long mtbl[17][2]={       //Min, Max
@@ -1088,36 +1092,41 @@ long mtbl[17][2]={       //Min, Max
 @<tt>{0〜255}の速度司令から@<tt>{0〜15}の値を取得する為に@<tt>{16}で除算しています。@<tt>{2}の倍数なのでビットシフトの演算が使用できますので、
 @<tt>{4}ビットシフトさせています。
 
-ちょと気になったので、@<tt>{Lasp = SpeedRef >> 4;}と@<tt>{Lasp = SpeedRef / 16;}のアセンブラリストを確認してみます。
+ちょと気になったので、@<tt>{asp = SpeedRef >> 4;}と@<tt>{asp = SpeedRef / 16;}のアセンブラリストを確認してみます。
 
 //emlistnum{
 asp = SpeedRef >> 4;
 
-1bb8:	44 e0       	ldi	r20, 0x04	  ; r20レジスタに4を代入
-1bba:	96 95       	lsr	r25         ; 汎用作業レジスタの論理右移動
-1bbc:	87 95       	ror	r24         ; キャリーを含めた汎用作業レジスタの右回転
-1bbe:	4a 95       	dec	r20         ; 汎用作業レジスタを減少
-1bc0:	e1 f7       	brne	.-8      	; 0x1bba <main+0x7fa>
+1bb8:	44 e0   ldi r20, 0x04   ;  r20レジスタに4代入
+1bba:	96 95   lsr r25         ;  r25レジスタ右シフト
+1bbc:	87 95   ror r24         ;  r24レジスタキャリーを含めた右シフト
+1bbe:	4a 95   dec r20         ;  r20レジスタを減少(デクリメント)
+1bc0:	e1 f7   brne .-8        ;  0x1bba <main+0x7fa>
 //}
 
 //emlistnum{
 asp = SpeedRef / 16;
 
-1bb8:	44 e0       	ldi	r20, 0x04	  ; r20レジスタに4を代入
-1bba:	96 95       	lsr	r25         ; 汎用作業レジスタの論理右移動
-1bbc:	87 95       	ror	r24         ; キャリーを含めた汎用作業レジスタの右回転
-1bbe:	4a 95       	dec	r20         ; 汎用作業レジスタを減少
-1bc0:	e1 f7       	brne	.-8      	; 0x1bba <main+0x7fa>
+1bb8:	44 e0   ldi r20, 0x04   ;  r20レジスタに4代入
+1bba:	96 95   lsr r25         ;  r25レジスタ右シフト
+1bbc:	87 95   ror r24         ;  r24レジスタキャリーを含めた右シフト
+1bbe:	4a 95   dec r20         ;  r20レジスタを減少(デクリメント)
+1bc0:	e1 f7   brne .-8        ;  0x1bba <main+0x7fa>
 //}
 
-実は生成されているアセンブラコードは同じになりますので@<tt>{AVR}の最適化が効いています。
-（わかりにくいビットシフト@<tt>{>>}使わずに@<tt>{/16}の除算を使用した方がわかりやすいですね。)
+生成されているアセンブラコードは16で除算する方法でもコンパイラが最適化して同じアセンブラコードになります。
+
+（後からわかりにくいビットシフト@<tt>{>>}使わずに@<tt>{/16}の除算を使用した方がわかりやすいですね。)
 
 
 
 #@#-----------------------------------------------------------------------------
 #@# モーターファンクションデコーダを作る
 #@#-----------------------------------------------------------------------------
+
+//embed[latex]{
+\clearpage
+//}
 
 == モーターファンクションデコーダを作る
 @<tt>{Arduino Nano  DCC Shield }はレイアウト用のデコーダを想定しているためモータを動かす為の
@@ -1129,6 +1138,7 @@ asp = SpeedRef / 16;
 //image[arduinoDecoder][ArduinoベースのDCCデコーダ][scale=1]
 DCC電子工作連合は左から、スマイルデコーダ、@<tt>{MP3}サウンドデコーダ@<tt>{V6　N18、SmileDecoder N18、SmileMotorDecoder、SmileFunctionDecoder}
 の基板が用意されています。
+
 ※@<tt>{SmileMotorDecoder、SmileFunctionDecoder}は@<tt>{Attiny85}を使用したデコーダになります。
 
 この章ではマイコンに@<tt>{ATmega328}を使用し@<tt>{Arduino}プラットフォームで動作するスマイルデコーダを使用した車両用デコーダーを紹介します。
@@ -1144,7 +1154,7 @@ DCC電子工作連合は左から、スマイルデコーダ、@<tt>{MP3}サウ�
 まず最初にコマンドステーションから送信されるスロット値を@<tt>{PWM}値に変換してモータを制御する簡単なデコーダを紹介します。
 @<img>{motorDecoderL1}の様なブロック図になります。
 
-//image[motorDecoderL1][スロット値をPWM値に変換し出力するデコーダ][scale=1]
+//image[motorDecoderL1][スロット値をPWM値に変換し出力するデコーダ][scale=0.8]
 
 コマンドステーションのステップ数の設定が@<tt>{128STEP}に設定されている場合、@<tt>{0-127}の値が@<tt>{DCC}コマンドとして送信されてきます。
 この@<tt>{0-127}の数値を@<tt>{PWM}値@<tt>{0-254}に変換します。
@@ -1442,12 +1452,17 @@ void MOTOR_Main(int inSpeedCmd, int inDirection)
 #@# スロット値からモーター出力を市販品並みの処理を行うデコーダ
 #@#-----------------------------------------------------------------------------
 
-== BEMF処理に対応したモーターファンクションデコーダを作る
+//embed[latex]{
+\clearpage
+//}
+
+
+== BEMFに対応したモーターファンクションデコーダを作る
 
 この章からはスロット値からスケール変換して@<tt>{PWM}出力を行う簡易版から速度補償を組み込んだモータデコーダを紹介します。
 @<img>{motorDecoderL4}の様なブロック図になります。
 
-//image[motorDecoderL4][モーター処理の最終形][scale=1]
+//image[motorDecoderL4][モーター処理の最終形][scale=0.8]
 
 市販されているデコーダはモータに対して複数の制御を行うことができる様に作られています。今回は３種類のスピードテーブルを実装しました。
 
@@ -1640,7 +1655,7 @@ ON/OFF	8bit	7bit	6bit	5bit	4bit	3bit	2bit	1bit
 
   if(gCV29SpeedTable == 1){                       // ユーザースピードテーブルが有効？
     MOTOR_SpeedMode(UserSpeedTableMode);          // ユーザースピードテーブルモード
-  } else if(gCV2_Vstart < gCV6_VMIDDLE && gCV6_VMIDDLE < gCV5_VMAX){ // CV2,5,6 の関係が成立？
+  } else if(gCV2_Vstart < gCV6_VMIDDLE && gCV6_VMIDDLE<gCV5_VMAX){//CV2,5,6が成立？
     MOTOR_SpeedMode(ThreePpointsTableMode);       // 三点スピードテーブルモード
   } else {
     MOTOR_SpeedMode(LinerSpeedTableMode);         // リニアスピードテーブルモード
@@ -1660,7 +1675,7 @@ void loop(){
 	Dcc.process();
 
   if( (millis() - gPreviousL1) >= 10){
-    if(gCV10_BEMF_CutOff != 0){             // CV10 = 0 以外だったらBEMF処理のための誘起電圧測定を実行
+    if(gCV10_BEMF_CutOff != 0){ // CV10=0 以外だったらBEMF処理のための誘起電圧測定を実行
       MOTOR_Sensor();
     }
     gPreviousL1 = millis();
@@ -2120,7 +2135,7 @@ void MOTOR_Sensor()
 @<tt>{Arduino Nano DCC Shield}に@<tt>{2}台のサーボモータを取り付けたファンクションデコーダを作ります。
 @<tt>{CV}値で各パラメータが変更できるようにしております。
 @<tt>{OFF}時の角度、@<tt>{ON}時の角度、@<tt>{OFF->ON}の移動時間、@<tt>{ON->OFF}の移動時間を@<tt>{CV}値のパラメータとして設定ができます。
-//image[servoFunc1][パラメータ][scale=1]
+//image[servoFunc1][パラメータ][scale=0.8]
 //table[][CV一覧表]{
 CV	初期値	機能
 47	180	ServoA ON時の角度
@@ -2407,11 +2422,11 @@ float mapfloat(float x, float in_min, float in_max, float out_min, float out_max
 @<tt>{Arduino}の関数として用意されている@<tt>{map()}関数の@<tt>{float}版で、角度から@<tt>{PWM}幅へのスケール変換関数として
 使用しています。
 
-//image[servoFunc2][２点を通る直線の方程式][scale=1]
+//image[servoFunc2][２点を通る直線の方程式][scale=0.8]
 
 原理は２点を通る直線の方程式を使用してスケール変換しています。
 
-//image[servoFunc3][スケール変換][scale=1]
+//image[servoFunc3][スケール変換][scale=0.8]
 
 === ServoDriver()の実装
 //emlistnum{
@@ -2848,7 +2863,7 @@ void Dccinit(void)
 @<tt>{DFRobottoDFPlayerMini}を使用した@<tt>{MP3}サウンドデコーダです。主にホームの構内放送や建物の効果音等に使用できます。
 
 === 完成写真
-//image[mp3decoder2][MP3 Decoder][scale=1]
+//image[mp3decoder2][MP3 Decoder][scale=0.8]
 
 === 仕様を考える
 
@@ -2863,7 +2878,7 @@ void Dccinit(void)
 
 === 接続図
 
-//image[mp3decoder1][MP3 Decoder][scale=1]
+//image[mp3decoder1][MP3 Decoder][scale=0.8]
 @<tt>{Arduino Nano  DCC Shield} に@<tt>{ DFPlayer mini Board AYA049-2}を取り付けます。
 
 @<tt>{VIN}に接続されない様に1ピンずらして実装してください。間違って@<tt>{VIN}に接続すると@<tt>{DFPlayer mini Board}に@<tt>{DC12V}が印加されて即故障します。
@@ -3221,10 +3236,10 @@ if( FuncGrp == FN_0_4){
 なお、@<tt>{DCC}通信モニタのスケッチの説明はありません。
 
 === 完成写真
-//image[dccmonitor1][DCC通信モニタ][scale=1]
+//image[dccmonitor1][DCC通信モニタ][scale=0.8]
 
 === 接続図
-//image[dccmonitor2][接続図][scale=1]
+//image[dccmonitor2][接続図][scale=0.8]
 
 @<tt>{Arduino Nano DCC Shield}とパソコンを直接接続すると、@<tt>{DCC}受信回路の故障等発生した時にパソコン側に
 @<tt>{DCC}電圧がパソコンに印加されて故障につながります。
