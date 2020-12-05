@@ -511,6 +511,12 @@ void FourDeceleration::statechk( void )
 
 ※@<tt>{2ColorLightSignal.cpp}と@<tt>{FiveDeceleration.cpp}はスケッチは用意されていません。
 
+
+//embed[latex]{
+\clearpage
+//}
+
+
 ====[column] 信号機クラスについて
 
 クラスを使用しない方法で信号機のスケッチを作ると@<img>{signal16}の様に1台目の信号機、2台目の信号機は別々のプログラムになります。
