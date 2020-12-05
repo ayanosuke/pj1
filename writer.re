@@ -8,15 +8,15 @@
 
 === 書き込み機の紹介
 
-@<tt>{9910}スマイルライター コンボ-@<tt>{A}キット@<tt>{（TYPE-A}専用@<tt>{）[}現行@<tt>{]}
+@<tt>{9910}スマイルライター コンボ-@<tt>{A}キット@<tt>{（TYPE-A}専用
 
 @<tt>{https://nagoden.cart.fc2.com/ca4/15/p-r-s/}
 //image[writer3][現行販売品][scale=0.5]
 
-@<tt>{Arduino UNO}に載せるタイプ[絶版]
+//embed[latex]{
+\clearpage
+//}
 
-@<tt>{https://desktopstation.net/wiki/doku.php/smile_writer}
-//image[writer1][シールドタイプ][scale=0.5]
 
 @<tt>{Arduino Nano}にコネクタを取り付けるコンパクトタイプ@<tt>{[DIY]}
 
