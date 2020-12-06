@@ -60,7 +60,7 @@
 
 ※在線検出回路で使用する@<tt>{Arduino　Nano DCC Shield}と共存できます。
 
-//image[signal10][信号機回路図][scale=1]
+//image[signal10][信号機回路図][scale=0.8]
 
 //image[signal12][信号機実態図][scale=0.8]
 
@@ -162,6 +162,10 @@ void loop() {
 
 6行目 2台目の信号機のステートマシン処理、時間都ともに赤→黄→青の点灯シーケンスを制御
 
+//embed[latex]{
+\clearpage
+//}
+
 === BlockingSignalState()の実装
 大まかな動きとしては、起動時に1台目、2台目信号機のステートマシーンに青信号表示を指定。
 以降は@<tt>{Cds}センサの在線検出をチェックして、信号機のステートマシーンに赤信号表示を指定しています。
@@ -182,11 +186,11 @@ void BlockingSignalState( void ){
                   break;
     case STS_IDLE:
                   if(FirstSensor.statechk(DetectionLevel) == 1){
-                    FirstSensor.Reset();
+                    FirstSensor.;
                     FirstSignal.ChangeState(ST_STOPDET);
                   }
                   if(SecondSensor.statechk(DetectionLevel) == 1){
-                    SecondSensor.Reset();
+                    SecondSensor.;
                     SecondSignal.ChangeState(ST_STOPDET);
                   }
                   break;
@@ -211,7 +215,7 @@ void BlockingSignalState( void ){
 
 @<tt>{Cds():Cds}センサのコンストラクタ
 
-@<tt>{Reset():Cds}ステートマシンのステートを@<tt>{ST_INIT}に遷移させます
+@<tt>{:Cds}ステートマシンのステートを@<tt>{ST_INIT}に遷移させます
 
 @<tt>{statechk()}ステートマシンを動かします
 
@@ -241,7 +245,7 @@ void Cds::Reset( void ){
 }
 //}
 
-=== Reset()の実装
+=== statechk()の実装
 //emlistnum{
 char Cds::statechk( char range ){
   switch(state){
@@ -293,6 +297,9 @@ char Cds::statechk( char range ){
 本スケッチは@<tt>{Cds}センサを使用していますが、フォトリフレクタクラス、リードスイッチクラス、@<tt>{tof}センサクラスに
 差し替えることで多種の在線検出に対応可能です。
 
+//embed[latex]{
+\clearpage
+//}
 
 === FourDeceleration.cpp に含まれている関数
 以下の関数が、@<tt>{FourDeceleration.cpp} ファイルに入っています。
@@ -350,9 +357,13 @@ FourDeceleration::FourDeceleration(char L1, char L2, char L3, char L4)
 
 8行目〜 @<tt>{pinMode()}でポートを初期化します。
 
+//embed[latex]{
+\clearpage
+//}
+
 === Detection()の実装
 
-財産を検出したというメンバ関数で強制的に在線検出した状態を通知します。
+在線を検出したというメンバ関数で強制的に在線検出した状態を通知します。
 
 //emlistnum{
 void FourDeceleration::Detection(void)
@@ -671,6 +682,9 @@ void loop() {
 
 10行目〜 @<tt>{100ms}周期に3つのステートマシンを処理します。
 
+//embed[latex]{
+\clearpage
+//}
 
 === CloseSignalState()の実装
 
@@ -721,7 +735,7 @@ void CloseSignalState( void ){
                   if(CdsSensorStr.statechk(LOW) == 1){  // STR側 在線検出
                     StrSignal.ChangeState(ST_STOPDET);     // 停止信号
 //                  StrSignal.ChangeState(ST_STOP);     // 停止信号
-                    CdsSensorStr.Reset();
+                    CdsSensorStr.;
                     state = STS_STRIDLE;
                   }
                   if( gCTevent == 1 ){ 　// アクセサリのDCCイベント発生
@@ -747,7 +761,7 @@ void CloseSignalState( void ){
                   if(CdsSensorDiv.statechk(LOW) == 1){  // DIVR側 在線検出
                     DivSignal.ChangeState(ST_STOPDET);  // 停止信号
 //                  DivSignal.ChangeState(ST_STOP);     // 停止信号
-                    CdsSensorDiv.Reset();
+                    CdsSensorDiv.;
                     state = STS_DIVIDLE;
                   }
                   if( gCTevent == 1 ){  // アクセサリのDCCイベント発生
@@ -801,6 +815,10 @@ uint16_t getMyAddr_Acc(void)
 
 14行目〜 @<tt>{CV29}の設定値から2バイトアドレスが有効かを判断し、2バイトアドレスタイプの場合2バイトアドレスを設定します。
 
+//embed[latex]{
+\clearpage
+//}
+
 === notifyDccAccState()の実装
 
 アクセサリ命令が受信されると呼ばれます。@<tt>{gDir}変数に直進または分岐の状態を代入します。
@@ -820,11 +838,11 @@ void notifyDccAccState(uint16_t Addr,uint16_t BoardAddr,uint8_t OutputAddr,
 }
 //}
 
-3行目 受信したアドレスを@<tt>{aAccAdress}に代入します。
+4行目 受信したアドレスを@<tt>{aAccAdress}に代入します。
 
-4行目 @<tt>{aDir}変数に直進または分岐かのフラグを代入します。
+5行目 @<tt>{aDir}変数に直進または分岐かのフラグを代入します。
 
-6行目 自分のアドレスと受信したアドレスを比較して異なっていた場合は処理を抜けます。
+7行目 自分のアドレスと受信したアドレスを比較して異なっていた場合は処理を抜けます。
 同じであったら@<tt>{gDir}変数に直進または分岐かのフラグを代入します。
 
 === その他の関数
@@ -847,4 +865,4 @@ void notifyDccAccState(uint16_t Addr,uint16_t BoardAddr,uint8_t OutputAddr,
 
 @<tt>{notifyDccSigState()}
 
-@<tt>{notifyDccReset()}
+@<tt>{notifyDcc}
