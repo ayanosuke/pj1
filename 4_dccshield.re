@@ -1,77 +1,10 @@
 = DCC用スケッチを作る
 == どんなスケッチを作る？
 本@<tt>{Arduino Nano DCC Shield}と@<tt>{NmraDCC}ライブラリを使うことで、ファンクションデコーダ、アクセサリデコーダ、
-@<tt>{DCC}モニタ（@<tt>{DCC}スニファ）を作ります。
-以下の順番でファンクションデコーダ、アクセサリデコーダを紹介していきます。
+@<tt>{DCC}モニタ（@<tt>{DCC}スニファ）を作ることができます。
+以下の順番でデコーダを紹介していきます。
 
 //blankline
-
-・ファンクションデコーダーの雛形
-
-　@<tt>{FunctionDecoderDoNothing.ino}
-
-//blankline
-
-・@<tt>{LED}ファンクションデコーダ
-
-　@<tt>{FunctionDecoderLED.ino}
-
-//blankline
-
-・@<tt>{FX}照明効果ファンクションデコーダ
-
-　@<tt>{FunctionDecoderLEDSEQ.ino}
-
-//blankline
-
-・パンタスパークファンクションデコーダ
-
-　@<tt>{FunctionDecoderLEDpanta.ino}
-
-//blankline
-
-・モータファンクションデコーダ
-
-　@<tt>{FunctionDecoderMotorL1.ino}
-//blankline
-
-・BEMF制御に対応したモータファンクションデコーダ
-
-　@<tt>{FunctionDecoderMotorL4.ino}
-//blankline
-
-・ステッピングファンクションデコーダ
-
-//blankline
-
-
-・サーボモータファンクションデコーダ
-
-　@<tt>{FunctionDecoderServo.ino}
-
-//blankline
-
-・サーボモータアクセサリデコーダ
-
-　@<tt>{AccDecoderServo0328.ino}
-
-//blankline
-
-・MP3サウンドデコーダ
-
-//blankline
-
-
-・車両デコーダー
-
-//blankline
-
-
-・DCC通信モニタ
-
-//embed[latex]{
-\clearpage
-//}
 
 #@#-----------------------------------------------------------------------------
 #@# ファンクションデコーダの雛形を作る
@@ -81,7 +14,7 @@
 まずは@<tt>{DCC}ファンクションデコーダの元となる、何もしない雛形のファンクションデコーダ@<tt>{FunctionDecoderDoNothing}のスケッチを
 紹介します。
 
-//image[dccsyori][DCCデコーダ処理ブロック図][scale=1]
+//image[dccsyori][DCCデコーダ処理ブロック図][scale=0.8]
 
 @<tt>{DCC}の受信処理は@<tt>{DCC}ライブラリ側で行っていますので、デコーダを作る際は速度インベントの処理、ファンクションイベントの
 処理だけを作成すればよいので簡単に作れます。
@@ -112,9 +45,9 @@ https://github.com/DccShield/FunctionDecoderDoNothing
 === FunctionDecoderDoNothing.ino に含まれている関数
 以下の関数が、@<tt>{FunctionDecoderDoNothing.ino} ファイルに入っています。
 
-@<tt>{setup()                        ： }Arduinoの初期化関数
+@<tt>{setup()                        ： Arduino}の初期化関数
 
-@<tt>{loop()                         ： }Arduinoのループ関数
+@<tt>{loop()                         ： Arduino}のループ関数
 
 @<tt>{dccinit()                      ： }デコーダの初期化を行う関数
 
@@ -256,16 +189,16 @@ gCVx_LAddr = (Dcc.getCV( CV_MULTIFUNCTION_EXTENDED_ADDRESS_MSB ) << 8) +
 27行目@<tt>{:gCVx_LAddr }に@<tt>{ CV17}と@<tt>{CV18}で設定されているDCC拡張アドレス@<tt>{(1〜9999)}を@<tt>{EEPROM}から読み込みます。
 
 === MOTOR_Ack()の実装
-@<tt>{Dcc}の@<tt>{ACK}を返す時に使用するポートを指定しますが、なにもしないデコーダーでは未使用です。
+@<tt>{Dcc}の@<tt>{ACK}を返す時に使用するポートを指定しますが、なにもしないデコーダでは未使用です。
 
 === resetCVToDefault()の実装
 @<tt>{CV}値をデフォルトに書き換える関数です。
 
 === notifyDccSpeed()の実装
-@<tt>{DCC}速度信号の受信によるイベント発生時に呼び出す関数です。なにもしないデコーダーでは未使用です。
+@<tt>{DCC}速度信号の受信によるイベント発生時に呼び出す関数です。なにもしないデコーダでは未使用です。
 
 === notifyDccFunc()の実装
-ファンクション信号受信のイベント発生時に呼び出す関数です。なにもしないデコーダーでは未使用です
+ファンクション信号受信のイベント発生時に呼び出す関数です。なにもしないデコーダでは未使用です
 
 === notifyCVResetFactoryDefault()の実装
 @<tt>{CV8} によるリセットコマンド受信処理
@@ -488,44 +421,9 @@ extern void notifyDccSpeed( uint16_t Addr, DCC_ADDR_TYPE AddrType, uint8_t Speed
 
 //blankline
 
-@<tt>{extern void notifyDccFunc(uint16_t Addr, DCC_ADDR_TYPE AddrType, FN_GROUP FuncGrp, uint8_t FuncState)}
+@<tt>{FuncGrp}と@<tt>{FuncState}の関係は、第5章@<tt>{notifyDccFunc()}を参照します。
 
-@<tt>{Addr}には自身の@<tt>{DCC}アドレス値が設定されています。次のページは@<tt>{DCC}アドレス@<tt>{3}の時にファンクションを受信した時の表となります。
-
-//table[notifyDccFunc][notifyDccFunc引数]{
-ファンクション	Addr	AddrType	FuncGrp	FuncState
-F0	3	0	1	0x10
-F1	3	0	1	0x01
-F2	3	0	1	0x02
-F3	3	0	1	0x04
-F4	3	0	1	0x08
-F5	3	0	2	0x01
-F6	3	0	2	0x02
-F7	3	0	2	0x04
-F8	3	0	2	0x08
-F9	3	0	3	0x01
-F10	3	0	3	0x02
-F11	3	0	3	0x04
-F12	3	0	3	0x08
-F13	3	0	4	0x01
-F14	3	0	4	0x02
-F15	3	0	4	0x04
-F16	3	0	4	0x08
-F17	3	0	4	0x10
-F18	3	0	4	0x20
-F19	3	0	4	0x40
-F20	3	0	4	0x80
-F21	3	0	5	0x01
-F22	3	0	5	0x02
-F23	3	0	5	0x04
-F24	3	0	5	0x08
-F25	3	0	5	0x10
-F26	3	0	5	0x20
-F27	3	0	5	0x40
-F28	3	0	5	0x80
-//}
-
-よって、@<tt>{F0}のみ@<tt>{ON}の時は、@<tt>{FuncGrp: 1, FuncState: 10}になります。
+表から@<tt>{F0}のみ@<tt>{ON}の時は、@<tt>{FuncGrp: 1, FuncState: 10}になります。
 
 @<tt>{F0}と@<tt>{F3}が@<tt>{ON}の時は@<tt>{0x10}と@<tt>{0x02}を加算して、@<tt>{FuncGrp: 1, FuncState: 12}になります。
 
@@ -683,16 +581,19 @@ if( FuncGrp == FN_0_4)  // F0〜F4の解析
 
 @<tt>{F0}のファンクションを受信した時の処理の説明ですが、@<tt>{FN_0_4}は@<tt>{NmraDcc.h}で定義されていますが@<tt>{1}が設定されています。
 
-@<tt>{F0}を受信した時は@<tt>{FuncGrp = 1}になりますので、@<tt>{if( FuncGrp == FN_0_4)}が成立します。（1行目）
+1行目 @<tt>{F0}を受信した時は@<tt>{FuncGrp = 1}になりますので、@<tt>{if( FuncGrp == FN_0_4)}が成立します。
 
-次に、@<tt>{NmraDcc.h}で定義されていますが@<tt>{#define FN_BIT_00	0x10}となっており、@<tt>{if( gState_F0 != (FuncState & FN_BIT_00))}
+3行目 @<tt>{NmraDcc.h}で定義されていますが@<tt>{#define FN_BIT_00	0x10}となっており、@<tt>{if( gState_F0 != (FuncState & FN_BIT_00))}
 の構文で、@<tt>{F0}を受信した時は、@<tt>{FuncState = 0x10}になりますので、@<tt>{0x10 & 0x10}で@<tt>{0x10}になり@<tt>{gState_F0}に入っていた値と
-違う値になった場合、条件が成立します。（３行目）
+違う値になった場合、条件が成立します。
 
-@<tt>{gState_F0 = (FuncState & FN_BIT_00);}より、@<tt>{gState_F0}には、@<tt>{OFF->ON}の時は@<tt>{0x10}。@<tt>{ON->OFF}の時は@<tt>{0x10}が代入されます。
-（６行目）
+6行目 @<tt>{gState_F0 = (FuncState & FN_BIT_00);}より、@<tt>{gState_F0}には、@<tt>{OFF->ON}の時は@<tt>{0x10}。@<tt>{ON->OFF}の時は@<tt>{0x00}が代入されます。
 
-この代入している数値がややこしくしていまして、@<tt>{F0} が@<tt>{ON}だからと言って、@<tt>{gState_F0}に@<tt>{1}が代入されず@<tt>{0x10}が代入します。
+この数値がファンクションのON/OFFの判定をややこしくしていまして、@<tt>{F0} が@<tt>{ON}だからと言って、@<tt>{gState_F0}に@<tt>{1}ではなく@<tt>{0x10}がONになります。
+
+//embed[latex]{
+\clearpage
+//}
 
 === resetCVToDefault()の実装
 @<tt>{FactoryDefaultCVs}で設定した各@<tt>{CV}デフォルトテーブルを元に@<tt>{EEPROM}内の@<tt>{CV}値を初期化します。
@@ -732,7 +633,9 @@ resetFunc();
 //MOTOR_Ack();
 //}
 
-
+//embed[latex]{
+\clearpage
+//}
 === Dccinit()の実装
 
 デコーダの初期化を行います。
@@ -768,6 +671,8 @@ resetFunc();
     //Init CVs
     //E2P-ROMからCV値を読み込む
 //}
+
+処理は、「ファンクションデコーダの雛形を作る」の章と同じですので参照してください。
 
 === notifyCVChange()の実装
 @<tt>{CV}値が変換した時の処理です。
@@ -911,7 +816,7 @@ void Dccinit(void)
 ※尚本スケッチではデジトラックスのデコーダの様に細かな条件を付けられる様にしておりません。
 メンバ関数 @<tt>{HeadLight.Change()}を使用して@<tt>{FX}照明効果の種類を切り替えられます。
 
-@<tt>{SeqLight.cpp}をデコーダー様に@<tt>{2}箇所変更してあります。
+@<tt>{SeqLight.cpp}をデコーダ用に@<tt>{2}箇所変更してあります。
 @<tt>{CV49}の設定で@<tt>{FX}照明効果を切り替えられる様にメンバ関数@<tt>{Change()}を追加しました。
 引数に@<tt>{0〜13}の数値を入れて@<tt>{FX}照明効果を切り替えることができます。
 //emlistnum{
@@ -1089,6 +994,10 @@ long mtbl[17][2]={       //Min, Max
 
 //image[panta3][パンタスパークステートマシン][scale=1]
 
+//embed[latex]{
+\clearpage
+//}
+
 @<tt>{0〜255}の速度司令から@<tt>{0〜15}の値を取得する為に@<tt>{16}で除算しています。@<tt>{2}の倍数なのでビットシフトの演算が使用できますので、
 @<tt>{4}ビットシフトさせています。
 
@@ -1141,7 +1050,7 @@ DCC電子工作連合は左から、スマイルデコーダ、@<tt>{MP3}サウ�
 
 ※@<tt>{SmileMotorDecoder、SmileFunctionDecoder}は@<tt>{Attiny85}を使用したデコーダになります。
 
-この章ではマイコンに@<tt>{ATmega328}を使用し@<tt>{Arduino}プラットフォームで動作するスマイルデコーダを使用した車両用デコーダーを紹介します。
+この章ではマイコンに@<tt>{ATmega328}を使用し@<tt>{Arduino}プラットフォームで動作するスマイルデコーダを使用した車両用デコーダを紹介します。
 
 === スマイルデコーダのピンアサイン
 @<tt>{Arduino Nano DCC Shield}とは違うので@<img>{arduinoport}に表にまとめました。スマイルデコーダとなごでんさんのスマイルデコーダとは@<tt>{PWM_A}と@<tt>{PWM_B}の
@@ -1154,7 +1063,7 @@ DCC電子工作連合は左から、スマイルデコーダ、@<tt>{MP3}サウ�
 まず最初にコマンドステーションから送信されるスロット値を@<tt>{PWM}値に変換してモータを制御する簡単なデコーダを紹介します。
 @<img>{motorDecoderL1}の様なブロック図になります。
 
-//image[motorDecoderL1][スロット値をPWM値に変換し出力するデコーダ][scale=0.8]
+//image[motorDecoderL1][スロット値をPWM値に変換し出力するデコーダ][scale=0.6]
 
 コマンドステーションのステップ数の設定が@<tt>{128STEP}に設定されている場合、@<tt>{0-127}の値が@<tt>{DCC}コマンドとして送信されてきます。
 この@<tt>{0-127}の数値を@<tt>{PWM}値@<tt>{0-254}に変換します。
@@ -1168,7 +1077,7 @@ DCC電子工作連合は左から、スマイルデコーダ、@<tt>{MP3}サウ�
 
 処理は単純ですがアナログコントローラと同等な運転ができますので十分に遊べます。
 
-@<href>{https://desktopstation.net/wiki/doku.php/ds_smile_decoder_r4,[ スマイルデコーダー紹介のページ ]}
+@<href>{https://desktopstation.net/wiki/doku.php/ds_smile_decoder_r4,[ スマイルデコーダ紹介のページ ]}
 
 @<tt>{https://desktopstation.net/wiki/doku.php/ds_smile_decoder_r4}
 
@@ -1326,6 +1235,9 @@ gCVx_LAddr = (Dcc.getCV( CV_MULTIFUNCTION_EXTENDED_ADDRESS_MSB ) << 8) +
 
 48行目 @<tt>{CVx_LAddr}に@<tt>{EEPROM}から@<tt>{CV17,C18}の拡張アドレスを読み込んで代入
 
+//embed[latex]{
+\clearpage
+//}
 
 === loop()の実装
 @<tt>{Arduino}で用意されている@<tt>{loop()}内のスケッチを永遠に繰り返す関数です。
@@ -1360,6 +1272,10 @@ void loop(){
 
 @<tt>{MOTOR_Ack() ： }モーターACK関数
 
+//embed[latex]{
+\clearpage
+//}
+
 === Motor_Init()の実装
 モーターの初期化を行います。
 //emlistnum{
@@ -1390,16 +1306,18 @@ void MOTOR_Init()
 @<tt>{31kHz}のキャリア周波数にする為@<tt>{TCCRIBの}の下位@<tt>{3bit}に1をセットすると、
 @<tt>{f = 16MHz / (1 * 255 * 2) = 31372Hz}になります。
 
+//embed[latex]{
+\clearpage
+//}
 
 === Motor_Main()の実装
-モータードライバICに@<tt>{PWM}を出力する処理を行います。
+モータードライバ@<tt>{IC}に@<tt>{PWM}を出力する処理を行います。
 //emlistnum{
 void MOTOR_Main(int inSpeedCmd, int inDirection)
 {
   uint16_t aPWMRef = 0;
 
   aPWMRef = inSpeedCmd;
-  //PWM出力
   if( aPWMRef == 0){
     #ifdef ONBRAKEPWM
       analogWrite(MOTOR_PWM_A, 255);
@@ -1525,6 +1443,9 @@ void MOTOR_Main(int inSpeedCmd, int inDirection)
 
 @<tt>{notifyCVChange()            ：　CV}値が変化あった時に呼ばれる関数
 
+//embed[latex]{
+\clearpage
+//}
 
 === setup()の実装
 
@@ -1716,7 +1637,7 @@ extern void notifyDccFunc(uint16_t Addr, DCC_ADDR_TYPE AddrType, FN_GROUP FuncGr
   		break;
 //}
 
-@<tt>{notifyDccFunc()}はファンクションコマンドを受信した時に呼ばれれるイベントです。@<tt>{LED}ファンクションデコーダーとはちょっと違った
+@<tt>{notifyDccFunc()}はファンクションコマンドを受信した時に呼ばれれるイベントです。@<tt>{LED}ファンクションデコーダとはちょっと違った
 構文解析になっています。
 @<tt>{FnucGrp}に受信されたファンクションのグループが定義されますので、@<tt>{switch case}文で振り分けて、@<tt>{FuncState}に格納されているビット
 テストして点灯、消灯させています。
@@ -1735,7 +1656,7 @@ extern void notifyDccFunc(uint16_t Addr, DCC_ADDR_TYPE AddrType, FN_GROUP FuncGr
 
 @<tt>{MOTOR_Main()      ： }モータ制御関数
 
-@<tt>{MOTOR_Ack()       ： }デコーダー応答用関数
+@<tt>{MOTOR_Ack()       ： }デコーダ応答用関数
 
 @<tt>{MOTOR_SpeedMode() ： }スピードテーブル設定関数
 
@@ -1802,6 +1723,9 @@ byte lerp(int x0, int y0, int x1, int y1, int x) {
   return y0 + ((y1 - y0) * (x - x0)) / (x1 - x0);
 }
 //}
+//embed[latex]{
+\clearpage
+//}
 
 === map関数
 @<tt>{Arduino}では数値をある範囲から別の範囲に変換する@<tt>{map()}という関数が用意されています。@<tt>{Arduino}の@<tt>{map}関数は以下にの様に
@@ -1820,6 +1744,11 @@ long map(long x, long in_min, long in_max, long out_min, long out_max) {
 スロットル値が速度になる様に制御を行うのが@<tt>{PID}制御とういうフィードバック制御を行います。
 @<tt>{PID}制御なしで平坦を走らせると@<img>{pid1}の様にスロットル５で、速度５がでます。
 //image[pid1][平坦を走らせると][scale=1]
+
+//embed[latex]{
+\clearpage
+//}
+
 
 @<img>{pid2}の様に上り坂を走らせると速度低下、下り坂を走らせると速度が早まります。
 //image[pid2][坂を走らせると][scale=1]
@@ -1882,6 +1811,10 @@ byte pid( int spd )
 14行目 比例制御、積分制御、微分制御にそれぞれ係数を乗算しPWM値を算出します。
 
 16行目〜 @<tt>{PWM}計算結果が0以下になったら、比例生業、積分制御、微分制御の変数を初期化します。
+
+//embed[latex]{
+\clearpage
+//}
 
 
 === MOTOR_Main()の実装
@@ -1989,6 +1922,12 @@ void MOTOR_Main(byte inSpeedCmd, byte inDirection)
       aNowPWMRef  = 0;
     }
 //}
+
+
+//embed[latex]{
+\clearpage
+//}
+
 
 === PWM出力部
 
@@ -2106,7 +2045,7 @@ void MOTOR_Sensor()
 7行目〜 @<tt>{PWM}出力を@<tt>{OFF}にします。
 
 15行目　@<tt>{300ms}待ちます。
-※@<tt>{loop()}関数から、@<tt>{10ms}周期に@<tt>{MOTOR_Sensor()}関数を呼んでいますが、デコーダーはタイムスライス処理で多岐の機能を短時間で実行し、
+※@<tt>{loop()}関数から、@<tt>{10ms}周期に@<tt>{MOTOR_Sensor()}関数を呼んでいますが、デコーダはタイムスライス処理で多岐の機能を短時間で実行し、
 他の処理が滞らないようにする作りをしているのですが、ここで@<tt>{300ms}という長めのウエイトを入れるのはあまり良い作りではありません。
 
 17行目〜　@<tt>{30us}の間隔で@<tt>{8}回サンプリングします。
@@ -2411,6 +2350,11 @@ CV	初期値	機能
 @<tt>{ServoDriver::stateCheck()  ： }ステートマシン
 
 @<tt>{ServoDriver::gState()      ： }
+
+//embed[latex]{
+\clearpage
+//}
+
 
 === mapfloat()の実装
 //emlistnum{
