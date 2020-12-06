@@ -246,8 +246,8 @@ void NmraDcc::pin(uint8_t ExtIntNum,uint8_t ExtIntPinNum,uint8_t EnablePullup)
 
 デコーダから@<tt>{CV8}を読み出すとメーカー個別番号（@<tt>{NMRA}で認証された番号）を読み出すことができます。
 このメーカー個別番号@<tt>{(DCC Manufacturer ID Numbers)}は@<tt>{NMRA}のサイトの、
-@<tt>{https://www.nmra.org/manufacturer-id-numbers}から番号に紐づけられているデコーダーのメーカを調べられます。
-デコーダーを自作する場合は、@<tt>{MAN_ID_DIY}（自作デコーダ用）の@<tt>{ID}は@<tt>{0x0D} を設定してください。
+@<tt>{https://www.nmra.org/manufacturer-id-numbers}から番号に紐づけられているデコーダのメーカを調べられます。
+デコーダを自作する場合は、@<tt>{MAN_ID_DIY}（自作デコーダ用）の@<tt>{ID}は@<tt>{0x0D} を設定してください。
 
 //blankline
 
@@ -824,7 +824,7 @@ void notifyDccSpeedRaw( uint16_t Addr, DCC_ADDR_TYPE AddrType, uint8_t Raw)
 //}
 
 
-=== notifyDccFunc()[ユーザー定義]
+=== notifyDccFunc()
 [ユーザープログラムで使用します]
 
 ファンクションデコーダのファンクションコマンドのコールバック関数です。
@@ -858,6 +858,42 @@ F1-F28のファンクションの受信が可能です。
 
 ==== 戻り値
 なし
+
+==== 受信したファンクションに対応する引数
+
+//table[notifyDccFunc][notifyDccFunc引数]{
+ファンクション	Addr	AddrType	FuncGrp	FuncState
+F0	3	0	1	0x10
+F1	3	0	1	0x01
+F2	3	0	1	0x02
+F3	3	0	1	0x04
+F4	3	0	1	0x08
+F5	3	0	2	0x01
+F6	3	0	2	0x02
+F7	3	0	2	0x04
+F8	3	0	2	0x08
+F9	3	0	3	0x01
+F10	3	0	3	0x02
+F11	3	0	3	0x04
+F12	3	0	3	0x08
+F13	3	0	4	0x01
+F14	3	0	4	0x02
+F15	3	0	4	0x04
+F16	3	0	4	0x08
+F17	3	0	4	0x10
+F18	3	0	4	0x20
+F19	3	0	4	0x40
+F20	3	0	4	0x80
+F21	3	0	5	0x01
+F22	3	0	5	0x02
+F23	3	0	5	0x04
+F24	3	0	5	0x08
+F25	3	0	5	0x10
+F26	3	0	5	0x20
+F27	3	0	5	0x40
+F28	3	0	5	0x80
+//}
+
 
 ==== 使用例
 //emlistnum{
@@ -1110,7 +1146,7 @@ void notifyDccAccTurnoutOutput( uint16_t Addr, uint8_t Direction,
 @<tt>{notifyDccSigOutputState( Addr, State )}
 
 ==== パラメーター
-@<tt>{Addr :} デコーダーアドレス
+@<tt>{Addr :} デコーダアドレス
 
 @<tt>{State : 6 bit command equivalent to S-9.2.1 00XXXXXX.}
 
@@ -1303,7 +1339,7 @@ void notifyCVResetFactoryDefault()
 
 4行目 : @<tt>{CV8}コマンドが複数受信しても無視するためのウエイト
 
-5行目 : デコーダーをリセットスタートさせます。
+5行目 : デコーダをリセットスタートさせます。
 
 //embed[latex]{
 \clearpage
@@ -1315,7 +1351,7 @@ void notifyCVResetFactoryDefault()
 
 [ユーザープログラムで使用します]
 
-コマンドステーションからデコーダーの@<tt>{CV}を読み取る命令が届いた時に応答する時に呼び出されます．
+コマンドステーションからデコーダの@<tt>{CV}を読み取る命令が届いた時に応答する時に呼び出されます．
 このコールバック関数は、デコーダが消費する電流を @<tt>{6ms ±1ms} の間、@<tt>{60mA}以上増やす必要があります。
 @<tt>{notifyServiceMode()}の値で、@<tt>{DIRECT MODE }時のみ@<tt>{Ack}を返す様に作ると、運転中支障なく@<tt>{DCV}値の変更が
 可能になります。
